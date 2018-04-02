@@ -178,6 +178,10 @@
     <Compile Include="Migrations\201804021129342_AddMembershipType.Designer.cs">
       <DependentUpon>201804021129342_AddMembershipType.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804021145546_UPD_MembershipType_SignUpFee.cs" />
+    <Compile Include="Migrations\201804021145546_UPD_MembershipType_SignUpFee.Designer.cs">
+      <DependentUpon>201804021145546_UPD_MembershipType_SignUpFee.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -270,6 +274,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804021129342_AddMembershipType.resx">
       <DependentUpon>201804021129342_AddMembershipType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804021145546_UPD_MembershipType_SignUpFee.resx">
+      <DependentUpon>201804021145546_UPD_MembershipType_SignUpFee.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
