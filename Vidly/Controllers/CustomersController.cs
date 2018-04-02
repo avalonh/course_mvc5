@@ -26,17 +26,13 @@ namespace Vidly.Controllers
         // GET: Customers
         public ActionResult Index()
         {
-            //var cus = GetCustomer();
-
             var cus = _context.Customers.Include(c => c.MembershipType).ToList();
-            
 
             return View(cus);
         }
 
         public ActionResult Details(int id)
         {
-            //var cus = GetCustomer().SingleOrDefault(s => s.Id == id);
             var cus = _context.Customers
                 .Include(c => c.MembershipType)
                 .SingleOrDefault(s => s.Id == id);
@@ -47,15 +43,59 @@ namespace Vidly.Controllers
             return View(cus);
         }
 
-        private IEnumerable<Customer> GetCustomer()
+        public ActionResult New()
         {
-            return new List<Customer>
-            {
-                new Customer {Id = 1, Name = "John Smith"},
-                new Customer {Id = 2, Name = "Mary Williams"}
+            var membershipTypes = _context.MembershipTypes.ToList();
 
+            var viewModel= new CustomerFormViewModel
+            {
+                MembershipTypes = membershipTypes
             };
+
+            return View("CustomerForm",viewModel);
         }
 
+        [HttpPost]
+        public ActionResult Save(Customer customer)
+        {
+            if(customer.Id == 0)
+                _context.Customers.Add(customer);
+            else
+            {
+                var customerInDb = _context.Customers.Single(s => s.Id == customer.Id);
+                
+                //official security hole DONOT PREFER THIS
+                //TryUpdateModel(customerInDb, "", new string[]{"Name","Email"});//3rd param filter for the updatable field
+
+
+                //Mapper.Map(customer, customerInDb);
+                //param save should be a class UpdateCustomerDto that accept only the member to update from Customer
+
+
+                customerInDb.Name = customer.Name;
+                customerInDb.Birthdate = customer.Birthdate;
+                customerInDb.MembershipTypeId = customer.MembershipTypeId;
+                customerInDb.IsSubscribedToNewsLetter = customer.IsSubscribedToNewsLetter;
+            }
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Customers");
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
+
+            if (customer == null)
+                return HttpNotFound();
+
+            var viewModel = new CustomerFormViewModel
+            {
+                Customer = customer,
+                MembershipTypes = _context.MembershipTypes.ToList()
+            };
+
+            return View("CustomerForm", viewModel);
+        }
     }
 }
