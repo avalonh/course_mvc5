@@ -5,18 +5,50 @@ using System.Web;
 using System.Web.Mvc;
 using Vidly.Models;
 using Vidly.ViewModels;
+using System.Data.Entity;
 
 namespace Vidly.Controllers
 {
     public class MoviesController : Controller
     {
-        // GET: Mouvies
-        public ActionResult Index()
+        private ApplicationDbContext _context;
+
+        public MoviesController()
         {
-            return View(GetMovies());
+            _context = new ApplicationDbContext();
         }
 
-        // GET: Mouvies/Random
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
+
+        // GET: Movies
+        public ActionResult Index()
+        {
+            return View(_context.Movies.Include(m => m.Genre).ToList());
+        }
+
+        public ActionResult Details(int id)
+        {
+            var mov = _context.Movies
+                .Include(m => m.Genre)
+                .SingleOrDefault(s => s.Id == id);
+
+            if (mov == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(mov);
+        }
+
+
+
+
+
+
+        // GET: Movies/Random
         public ActionResult Random()
         {
             var movie = new Movie {Name = "Shrek !"};
