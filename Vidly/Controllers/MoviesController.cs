@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Vidly.Models;
 using Vidly.ViewModels;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 
 namespace Vidly.Controllers
 {
@@ -43,6 +44,66 @@ namespace Vidly.Controllers
             return View(mov);
         }
 
+        public ActionResult New()
+        {
+            var viewModel = new MovieFormViewModel
+            {
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
+        public ActionResult Save(Movie movie)
+        {
+            if (movie.Id == 0)
+            {
+                _context.Movies.Add(movie);
+            }
+            else
+            {
+                var movieInDb = _context.Movies.Single(s => s.Id == movie.Id);
+
+                movieInDb.Name = movie.Name;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+                movieInDb.AddedDate = movie.AddedDate;
+                movieInDb.GenreId = movie.GenreId;
+                movieInDb.NumberInStock = movie.NumberInStock;
+            }
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+                
+                Console.WriteLine(e);
+            }
+
+            return RedirectToAction("Index", "Movies");
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var movie = _context.Movies.SingleOrDefault(s => s.Id == id);
+
+            if (movie == null)
+                HttpNotFound();
+            else
+            {
+                var viewModel = new MovieFormViewModel
+                {
+                     Movie = movie,
+                    Genres = _context.Genres.ToList()
+                };
+                return View("MovieForm", viewModel);
+            }
+            return View();
+        }
+
+
+
 
 
 
@@ -79,12 +140,9 @@ namespace Vidly.Controllers
             //return new EmptyResult();
             //return RedirectToAction("Index", "Home", new {IViewPageActivator = 1});
         }
-
-        public ActionResult Edit(int id)
-        {
-            return Content("id=" + id);
-        }
-
+        
+        #region old
+        
         public ActionResult test(int? pageIndex, string sortBy)
         {
             if (!pageIndex.HasValue)
@@ -102,15 +160,7 @@ namespace Vidly.Controllers
         public ActionResult ByReleaseDate(int year, int month)
         {
             return Content(year + "/" + month);
-        }
-
-        private IEnumerable<Movie> GetMovies()
-        {
-            return new List<Movie>
-            {
-                new Movie {Id = 1, Name = "Shrek"},
-                new Movie {Id = 2, Name = "Day after tomorow"}
-            };
-        }
+        } 
+        #endregion
     }
 }

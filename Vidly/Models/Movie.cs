@@ -22,8 +22,7 @@ namespace Vidly.Models
 
         [Required]
         public int NumberInStock { get; set; }
-
-        [Required]
+        
         public Genre Genre { get; set; }
 
         [Required]
